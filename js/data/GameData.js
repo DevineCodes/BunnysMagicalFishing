@@ -4,6 +4,10 @@ const GameData = {
 
     shoppingList: [],
 
+    score: 0,
+
+    coins: 0,
+
     lives: 3,
 
     timeLimit: 60

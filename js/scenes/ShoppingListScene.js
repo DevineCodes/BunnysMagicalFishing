@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import ITEMS from "../data/items.js";
+import GameData from "../data/GameData.js";
 
 export default class ShoppingListScene extends Phaser.Scene {
 
@@ -27,6 +28,7 @@ export default class ShoppingListScene extends Phaser.Scene {
 
         // Pick 3 random unique items
         const shoppingList = Phaser.Utils.Array.Shuffle([...ITEMS]).slice(0, 3);
+        GameData.shoppingList = shoppingList;
 
         // Build the display text
         let listText = "";
