@@ -9,13 +9,10 @@ export default class FishingScene extends Phaser.Scene {
     create() {
 
         this.createBackground();
-
+        this.createShoppingListUI();
         this.createClouds();
-
         this.createWater();
-
         this.createBoat();
-
         this.createBunny();
 
     }
@@ -121,14 +118,14 @@ export default class FishingScene extends Phaser.Scene {
 createFishingRod() {
 
     this.rod = this.add.image(
-        38,
-        -78,
-        "fishingRod"
-    );
+    95,
+    -18,
+    "fishingRod"
+);
 
-    this.rod.setScale(0.20);
+this.rod.setScale(0.16);
 
-    this.rod.setAngle(28);
+this.rod.setAngle(40);
 
     this.boatContainer.add(this.rod);
 
@@ -149,5 +146,53 @@ createFishingRod() {
 });
 }
 
+createShoppingListUI() {
+
+    const panel = this.add.rectangle(
+        240,
+        95,
+        260,
+        140,
+        0xFFFFFF,
+        0.92
+    );
+
+    panel.setStrokeStyle(4, 0x8B6B3F);
+
+    this.add.text(
+        240,
+        45,
+        "🧺 Shopping List",
+        {
+            fontFamily: "Arial",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#5A3E1B"
+        }
+    ).setOrigin(0.5);
+
+    const items = this.registry.get("shoppingList") || [];
+
+    let text = "";
+
+    items.forEach(item => {
+
+        text += "• " + item.name + "\n";
+
+    });
+
+    this.add.text(
+        150,
+        75,
+        text,
+        {
+            fontFamily: "Arial",
+            fontSize: "20px",
+            color: "#333333",
+            lineSpacing: 8
+        }
+    );
+
+}
 
 }
