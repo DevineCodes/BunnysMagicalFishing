@@ -1,5 +1,8 @@
 import Phaser from "phaser";
 import HomeScene from "./scenes/HomeScene.js";
+import ShoppingListScene from "./scenes/ShoppingListScene.js";
+import MagicalTreeScene from "./scenes/MagicalTreeScene.js";
+import BootScene from "./scenes/BootScene.js";
 
 const config = {
     type: Phaser.AUTO,
@@ -16,7 +19,17 @@ const config = {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
 
-    scene: [HomeScene]
+    scene: [
+
+    BootScene,
+
+    HomeScene,
+
+    ShoppingListScene,
+
+    MagicalTreeScene
+
+]
 };
 
 new Phaser.Game(config);

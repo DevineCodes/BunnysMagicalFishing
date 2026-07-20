@@ -6,46 +6,27 @@ export default class HomeScene extends Phaser.Scene {
         super("HomeScene");
     }
 
-    preload() {
+    create() {
+        // Fade in
+this.cameras.main.fadeIn(400, 0, 0, 0);
 
-        this.load.image(
-    "homeBackground",
-    "images/backgrounds/home_background.png"
-);
-
-this.load.image(
-    "bunnyHouse",
-    "images/house/bunny_house.png"
-);
-
-        this.load.image(
-            "bunny",
-            "images/bunny/bunny_idle.png"
+        // Background
+        this.add.image(
+            240,
+            400,
+            "homeBackground"
         );
 
-        this.load.image(
-    "playButton",
-    "images/ui/play_button.png"
-);
+        // House
+        const house = this.add.image(
+            240,
+            500,
+            "bunnyHouse"
+        );
 
-    }
+        house.setScale(0.45);
 
-    create() {
-
-        this.add.image(
-    240,
-    400,
-    "homeBackground"
-);
-
-const house = this.add.image(
-    240,
-    500,
-    "bunnyHouse"
-);
-
-house.setScale(0.45);
-
+        // Title
         this.add.text(
             240,
             90,
@@ -60,42 +41,112 @@ house.setScale(0.45);
             }
         ).setOrigin(0.5);
 
+        // Bunny
         this.bunny = this.add.image(
-    240,
-    620,
-    "bunny"
-);
+            240,
+            620,
+            "bunny"
+        );
 
-this.bunny.setScale(0.28);
-this.tweens.add({
-    targets: this.bunny,
-    y: this.bunny.y - 6,
-    duration: 1200,
-    yoyo: true,
-    repeat: -1,
-    ease: "Sine.easeInOut"
+        this.bunny.setScale(0.28);
+
+        // Bunny Idle Animation
+        this.tweens.add({
+            targets: this.bunny,
+            y: this.bunny.y - 6,
+            duration: 1200,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut"
+        });
+
+        // -----------------------------
+        // PLAY BUTTON
+        // -----------------------------
+
+        const buttonImage = this.add.image(0, 0, "playButton");
+        buttonImage.setScale(0.45);
+
+        const buttonText = this.add.text(
+            0,
+            0,
+            "PLAY",
+            {
+                fontFamily: "Arial",
+                fontSize: "30px",
+                color: "#FFFFFF",
+                fontStyle: "bold",
+                stroke: "#5A3E1B",
+                strokeThickness: 6
+            }
+        ).setOrigin(0.5);
+
+        this.playButton = this.add.container(
+            240,
+            720,
+            [
+                buttonImage,
+                buttonText
+            ]
+        );
+
+        this.playButton.setSize(
+            buttonImage.displayWidth,
+            buttonImage.displayHeight
+        );
+
+        this.playButton.setInteractive({
+            useHandCursor: true
+        });
+
+        // Hover Animation
+        this.playButton.on("pointerover", () => {
+
+            this.tweens.add({
+                targets: this.playButton,
+                scaleX: 1.05,
+                scaleY: 1.05,
+                duration: 120
+            });
+
+        });
+
+        // Hover Out
+        this.playButton.on("pointerout", () => {
+
+            this.tweens.add({
+                targets: this.playButton,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 120
+            });
+
+        });
+
+        // Click Animation
+        this.playButton.on("pointerdown", () => {
+
+    this.tweens.add({
+        targets: this.playButton,
+        scaleX: 0.95,
+        scaleY: 0.95,
+        duration: 80,
+        yoyo: true,
+        ease: "Quad.easeOut",
+        onComplete: () => {
+
+    this.cameras.main.fadeOut(400, 0, 0, 0);
+
+    this.time.delayedCall(400, () => {
+
+        this.scene.start("ShoppingListScene");
+
+    });
+
+}
+    });
+
 });
-
-        const playButton = this.add.image(
-    240,
-    735,
-    "playButton"
-);
-
-playButton.setScale(0.45);
-this.add.text(
-    240,
-    720,
-    "PLAY",
-    {
-        fontFamily: "Arial",
-        fontSize: "28px",
-        color: "#ffffff",
-        fontStyle: "bold",
-        stroke: "#5A3E1B",
-        strokeThickness: 5
-    }
-).setOrigin(0.5);
 
     }
 
