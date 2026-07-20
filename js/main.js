@@ -3,6 +3,7 @@ import HomeScene from "./scenes/HomeScene.js";
 import ShoppingListScene from "./scenes/ShoppingListScene.js";
 import MagicalTreeScene from "./scenes/MagicalTreeScene.js";
 import BootScene from "./scenes/BootScene.js";
+import FishingScene from "./scenes/FishingScene.js";
 
 const config = {
     type: Phaser.AUTO,
@@ -27,7 +28,9 @@ const config = {
 
     ShoppingListScene,
 
-    MagicalTreeScene
+    MagicalTreeScene,
+
+    FishingScene
 
 ]
 };

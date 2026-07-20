@@ -44,6 +44,32 @@ export default class BootScene extends Phaser.Scene {
             "images/fairy/fairy_idle.png"
         );
 
+        // Cloud Portal
+this.load.image(
+    "cloudPortal",
+    "images/effects/cloud_portal.png"
+);
+
+this.load.image(
+    "boat",
+    "images/fishing/boat.png"
+);
+
+this.load.image(
+    "water",
+    "images/fishing/water.png"
+);
+
+this.load.image(
+    "clouds",
+    "images/fishing/clouds.png"
+);
+
+this.load.image(
+    "fishingRod",
+    "images/fishing/fishing_rod.png"
+);
+
     }
 
     create() {
