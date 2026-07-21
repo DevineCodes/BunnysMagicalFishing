@@ -9,6 +9,7 @@ export default class ShoppingListScene extends Phaser.Scene {
     }
 
     create() {
+
         this.cameras.main.fadeIn(400, 0, 0, 0);
 
         this.cameras.main.setBackgroundColor("#BDEBFF");
@@ -26,18 +27,28 @@ export default class ShoppingListScene extends Phaser.Scene {
             }
         ).setOrigin(0.5);
 
-        // Pick 3 random unique items
-        const shoppingList = Phaser.Utils.Array.Shuffle([...ITEMS]).slice(0, 3);
+        // Generate today's shopping list
+        const shoppingList = Phaser.Utils.Array
+            .Shuffle([...ITEMS])
+            .slice(0, 3);
+
+        // Save game data
         GameData.shoppingList = shoppingList;
 
-        // Build the display text
+        // IMPORTANT:
+        // Always start with an empty basket.
+        GameData.collectedItems = [];
+
+        // Build display text
         let listText = "";
 
         shoppingList.forEach(item => {
+
             listText += `${item.emoji} ${item.name}\n\n`;
+
         });
 
-        // Show the list
+        // Shopping list
         this.add.text(
             240,
             280,
@@ -50,79 +61,106 @@ export default class ShoppingListScene extends Phaser.Scene {
             }
         ).setOrigin(0.5);
 
-        // Start Journey Button
-const startButton = this.add.rectangle(
-    240,
-    650,
-    240,
-    70,
-    0x7ED957,
-    1
-);
+        // Start button
+        const startButton = this.add.rectangle(
+            240,
+            650,
+            240,
+            70,
+            0x7ED957,
+            1
+        );
 
-startButton.setStrokeStyle(4, 0x4A7A2A);
+        startButton.setStrokeStyle(
+            4,
+            0x4A7A2A
+        );
 
-const startText = this.add.text(
-    240,
-    650,
-    "Start Journey",
-    {
-        fontFamily: "Arial",
-        fontSize: "28px",
-        color: "#ffffff",
-        fontStyle: "bold"
+        const startText = this.add.text(
+            240,
+            650,
+            "Start Journey",
+            {
+                fontFamily: "Arial",
+                fontSize: "28px",
+                color: "#ffffff",
+                fontStyle: "bold"
+            }
+        ).setOrigin(0.5);
+
+        startButton.setInteractive({
+            useHandCursor: true
+        });
+
+        startButton.on("pointerover", () => {
+
+            this.tweens.add({
+
+                targets: [startButton, startText],
+
+                scaleX: 1.05,
+
+                scaleY: 1.05,
+
+                duration: 120
+
+            });
+
+        });
+
+        startButton.on("pointerout", () => {
+
+            this.tweens.add({
+
+                targets: [startButton, startText],
+
+                scaleX: 1,
+
+                scaleY: 1,
+
+                duration: 120
+
+            });
+
+        });
+
+        startButton.on("pointerdown", () => {
+
+            this.tweens.add({
+
+                targets: [startButton, startText],
+
+                scaleX: 0.95,
+
+                scaleY: 0.95,
+
+                duration: 80,
+
+                yoyo: true,
+
+                onComplete: () => {
+
+                    this.cameras.main.fadeOut(
+                        400,
+                        0,
+                        0,
+                        0
+                    );
+
+                    this.time.delayedCall(400, () => {
+
+                        this.scene.start(
+                            "MagicalTreeScene"
+                        );
+
+                    });
+
+                }
+
+            });
+
+        });
+
     }
-).setOrigin(0.5);
-
-// Make button interactive
-startButton.setInteractive({ useHandCursor: true });
-
-startButton.on("pointerover", () => {
-
-    this.tweens.add({
-        targets: [startButton, startText],
-        scaleX: 1.05,
-        scaleY: 1.05,
-        duration: 120
-    });
-
-});
-
-startButton.on("pointerout", () => {
-
-    this.tweens.add({
-        targets: [startButton, startText],
-        scaleX: 1,
-        scaleY: 1,
-        duration: 120
-    });
-
-});
-
-startButton.on("pointerdown", () => {
-
-    this.tweens.add({
-        targets: [startButton, startText],
-        scaleX: 0.95,
-        scaleY: 0.95,
-        duration: 80,
-        yoyo: true,
-        onComplete: () => {
-
-            this.cameras.main.fadeOut(400, 0, 0, 0);
-
-this.time.delayedCall(400, () => {
-
-    this.scene.start("MagicalTreeScene");
-
-});
-
-        }
-    });
-
-});
-
-    }
-    
 
 }

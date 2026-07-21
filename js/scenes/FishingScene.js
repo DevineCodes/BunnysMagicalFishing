@@ -1,7 +1,12 @@
 import Phaser from "phaser";
 import GameData from "../data/GameData.js";
 import ITEMS from "../data/items.js";
-
+import FishingManager from "../managers/FishingManager.js";
+import Boat from "../components/Boat.js";
+import Bunny from "../components/Bunny.js";
+import FishingRod from "../components/FishingRod.js";
+import Bobber from "../components/Bobber.js";
+import ShoppingUI from "../components/ShoppingUI.js";
 
 export default class FishingScene extends Phaser.Scene {
 
@@ -12,16 +17,38 @@ export default class FishingScene extends Phaser.Scene {
     create() {
 
         this.isFishing = false;
-
         this.waitingForBite = false;
+        this.fishingManager = new FishingManager(this);
         this.createBackground();
-        this.createShoppingListUI();
+        this.shoppingUI = new ShoppingUI(this);
+
+this.shoppingUI.create();
         this.createClouds();
         this.createWater();
-        this.createBoat();
-        this.createBunny();
-        this.createFishingLine();
-        this.createHook();
+
+        const boat = new Boat(this);
+this.boatContainer = boat.create();
+
+const bunny = new Bunny(
+    this,
+    this.boatContainer
+);
+
+this.bunny = bunny.create();
+
+const rod = new FishingRod(
+    this,
+    this.boatContainer
+);
+
+this.rod = rod.create();
+
+        this.fishingManager.createFishingLine();
+        const bobber = new Bobber(this);
+
+this.bobber = bobber;
+
+this.hook = bobber.create();
     }
 
     createBackground() {
@@ -72,25 +99,31 @@ export default class FishingScene extends Phaser.Scene {
 
         this.water.on("pointerdown", (pointer) => {
 
-    if (!this.isFishing) {
+            if (!this.isFishing) {
 
-        this.castFishingLine(pointer.x, pointer.y);
+                this.castFishingLine(pointer.x, pointer.y);
+
+            }
+
+            else if (this.waitingForBite) {
+
+                this.reelIn();
+
+            }
+
+        });
 
     }
 
-    else if (this.waitingForBite) {
-
-        this.reelIn();
-
-    }
-
-});
-
-    }
-
-    reelIn() {
+reelIn() {
 
     this.waitingForBite = false;
+
+    // Stop bobber floating animation
+    this.tweens.killTweensOf(this.hook);
+
+    // Stop every animation on the bobber
+this.tweens.killTweensOf(this.hook);
 
     const startX = this.boatContainer.x + 82;
     const startY = this.boatContainer.y - 82;
@@ -100,7 +133,6 @@ export default class FishingScene extends Phaser.Scene {
         targets: this.hook,
 
         x: startX,
-
         y: startY,
 
         duration: 450,
@@ -135,12 +167,20 @@ export default class FishingScene extends Phaser.Scene {
 
         onComplete: () => {
 
+            // Remove the fishing line
             this.lineGraphics.clear();
 
+            // Hide bobber
             this.hook.setVisible(false);
 
-            this.isFishing = false;
+            // Reset rotation
+            this.hook.setAngle(0);
 
+            // Ready for next cast
+            this.isFishing = false;
+            this.waitingForBite = false;
+
+            // Catch item
             this.catchRandomItem();
 
         }
@@ -148,156 +188,99 @@ export default class FishingScene extends Phaser.Scene {
     });
 
 }
-catchRandomItem() {
+    catchRandomItem() {
 
     const item = Phaser.Utils.Array.GetRandom(ITEMS);
 
     const needed = GameData.shoppingList.some(
-
         shoppingItem => shoppingItem.name === item.name
-
     );
 
-    if (needed) {
+    const alreadyCollected = GameData.collectedItems.includes(
+        item.name
+    );
 
-        const alreadyCollected = GameData.collectedItems.includes(item.name);
+    if (!needed) {
 
-        if (!alreadyCollected) {
+        this.shoppingUI.showCatchPopup(
 
-            GameData.collectedItems.push(item.name);
-            this.updateShoppingListUI();
-
-            this.showCatchPopup(
-                item,
-                true
-            );
-
-        }
-        else {
-
-            this.showCatchPopup(
-                item,
-                false,
-                "Already Collected!"
-            );
-
-        }
-
-    }
-    else {
-
-        this.showCatchPopup(
             item,
+
             false,
-            "Not On Today's List!"
+
+            "Not On Today's List!",
+
+            () => {
+
+                this.checkWinCondition();
+
+            }
+
         );
 
-    }
-
-}
-
-showCatchPopup(item, success, message = "") {
-
-    const panel = this.add.rectangle(
-        240,
-        250,
-        340,
-        170,
-        0xFFFFFF,
-        0.95
-    );
-
-    panel.setStrokeStyle(
-        4,
-        success ? 0x4CAF50 : 0xD9534F
-    );
-
-    const title = success ? "Collected!" : message;
-
-    const text = this.add.text(
-
-        240,
-        240,
-
-        `${title}\n\n${item.emoji} ${item.name}`,
-
-        {
-
-            fontFamily: "Arial",
-
-            fontSize: "28px",
-
-            color: "#4A3A24",
-
-            align: "center"
-
-        }
-
-    ).setOrigin(0.5);
-
-    this.time.delayedCall(1500, () => {
-
-        panel.destroy();
-
-        text.destroy();
-
-        this.checkWinCondition();
-
-    });
-
-}
-checkWinCondition() {
-
-    if (
-
-        GameData.collectedItems.length ===
-        GameData.shoppingList.length
-
-    ) {
-
-        this.showWinMessage();
+        return;
 
     }
 
-}
-showWinMessage() {
+    if (alreadyCollected) {
 
-    const panel = this.add.rectangle(
-        240,
-        400,
-        360,
-        220,
-        0xFFF8CC,
-        0.98
-    );
+        this.shoppingUI.showCatchPopup(
 
-    panel.setStrokeStyle(
-        5,
-        0xFFD700
-    );
+            item,
 
-    this.add.text(
+            false,
 
-        240,
-        400,
+            "Already Collected!",
 
-        "🎉\nShopping Complete!\n\nWell Done Luna!",
+            () => {
 
-        {
+                this.checkWinCondition();
 
-            fontFamily: "Arial",
+            }
 
-            fontSize: "30px",
+        );
 
-            color: "#4A3A24",
+        return;
 
-            align: "center"
+    }
+
+    // Correct item
+
+    GameData.collectedItems.push(item.name);
+
+    this.shoppingUI.updateList();
+
+    this.shoppingUI.showCatchPopup(
+
+        item,
+
+        true,
+
+        "",
+
+        () => {
+
+            this.checkWinCondition();
 
         }
 
-    ).setOrigin(0.5);
+    );
 
 }
+    checkWinCondition() {
+
+        if (
+
+            GameData.collectedItems.length ===
+            GameData.shoppingList.length
+
+        ) {
+
+            this.shoppingUI.showWinPopup();
+
+        }
+
+    }
 
     castFishingLine(targetX, targetY) {
         if (this.isFishing) {
@@ -366,180 +349,6 @@ showWinMessage() {
 
     }
 
-    createBoat() {
-
-        // Create a container so the boat and bunny move together
-        this.boatContainer = this.add.container(
-            240,
-            505
-        );
-
-        const boat = this.add.image(
-            0,
-            0,
-            "boat"
-        );
-
-        boat.setScale(0.28);
-
-        this.boatContainer.add(boat);
-
-        // Boat gently bobs on the water
-        this.tweens.add({
-
-            targets: this.boatContainer,
-
-            y: 500,
-
-            duration: 1800,
-
-            yoyo: true,
-
-            repeat: -1,
-
-            ease: "Sine.easeInOut"
-
-        });
-
-    }
-
-    createBunny() {
-
-        const bunny = this.add.image(
-            0,
-            -60,
-            "bunny"
-        );
-
-        bunny.setScale(0.18);
-
-        this.boatContainer.add(bunny);
-
-        this.createFishingRod();
-
-    }
-    createFishingRod() {
-
-        this.rod = this.add.image(
-            95,
-            -18,
-            "fishingRod"
-        );
-
-        this.rod.setScale(0.16);
-
-        this.rod.setAngle(40);
-
-        this.boatContainer.add(this.rod);
-
-        this.tweens.add({
-
-            targets: this.rod,
-
-            angle: 32,
-
-            duration: 1200,
-
-            yoyo: true,
-
-            repeat: -1,
-
-            ease: "Sine.easeInOut"
-
-        });
-    }
-
-    createShoppingListUI() {
-
-        const panel = this.add.rectangle(
-            240,
-            95,
-            260,
-            140,
-            0xFFFFFF,
-            0.92
-        );
-
-        panel.setStrokeStyle(4, 0x8B6B3F);
-
-        this.add.text(
-            240,
-            45,
-            "🧺 Shopping List",
-            {
-                fontFamily: "Arial",
-                fontSize: "22px",
-                fontStyle: "bold",
-                color: "#5A3E1B"
-            }
-        ).setOrigin(0.5);
-
-        this.shoppingTexts = [];
-
-const items = GameData.shoppingList;
-
-items.forEach((item, index) => {
-
-    const text = this.add.text(
-
-        120,
-        75 + index * 30,
-
-        `${item.emoji} ${item.name}`,
-
-        {
-            fontFamily: "Arial",
-            fontSize: "20px",
-            color: "#333333"
-        }
-
-    );
-
-    this.shoppingTexts.push(text);
-
-});
-
-    }
-
-    updateShoppingListUI() {
-
-    GameData.shoppingList.forEach((item, index) => {
-
-        const collected =
-            GameData.collectedItems.includes(item.name);
-
-        if (collected) {
-
-            this.shoppingTexts[index].setText(
-                `✅ ${item.emoji} ${item.name}`
-            );
-
-            this.shoppingTexts[index].setColor("#3A9D23");
-
-        }
-
-    });
-
-}
-
-    createFishingLine() {
-
-        this.lineGraphics = this.add.graphics();
-
-    }
-
-    createHook() {
-
-        this.hook = this.add.circle(
-            0,
-            0,
-            4,
-            0xCCCCCC
-        );
-
-        this.hook.setVisible(false);
-
-    }
     createSplash(x, y) {
 
         const splash = this.add.circle(
@@ -571,29 +380,36 @@ items.forEach((item, index) => {
 
     }
 
-startWaitingForBite() {
+    startWaitingForBite() {
+
+        this.waitingForBite = true;
+
+        const waitTime = Phaser.Math.Between(
+            1500,
+            3500
+        );
+
+        this.time.delayedCall(waitTime, () => {
+
+            this.showBite();
+
+        });
+
+    }
+    showBite() {
+
+    // Stop any previous animation on the bobber
+    this.tweens.killTweensOf(this.hook);
 
     this.waitingForBite = true;
-
-    const waitTime = Phaser.Math.Between(
-        1500,
-        3500
-    );
-
-    this.time.delayedCall(waitTime, () => {
-
-        this.showBite();
-
-    });
-
-}
-showBite() {
 
     this.tweens.add({
 
         targets: this.hook,
 
         y: this.hook.y + 8,
+
+        angle: 18,
 
         duration: 120,
 
@@ -603,14 +419,30 @@ showBite() {
 
         onComplete: () => {
 
-            console.log("Fish is biting!");
-            this.waitingForBite = true;
+            // Reset bobber angle
+            this.hook.setAngle(0);
+
+            // Gentle floating while waiting for player to reel in
+            this.tweens.add({
+
+                targets: this.hook,
+
+                y: this.hook.y - 3,
+
+                duration: 900,
+
+                yoyo: true,
+
+                repeat: -1,
+
+                ease: "Sine.easeInOut"
+
+            });
 
         }
 
     });
 
 }
-
 
 }

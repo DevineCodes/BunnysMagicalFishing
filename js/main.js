@@ -1,11 +1,13 @@
 import Phaser from "phaser";
+
+import LoadingScene from "./scenes/LoadingScene.js";
 import HomeScene from "./scenes/HomeScene.js";
 import ShoppingListScene from "./scenes/ShoppingListScene.js";
 import MagicalTreeScene from "./scenes/MagicalTreeScene.js";
-import BootScene from "./scenes/BootScene.js";
 import FishingScene from "./scenes/FishingScene.js";
 
 const config = {
+
     type: Phaser.AUTO,
 
     parent: "game",
@@ -21,18 +23,13 @@ const config = {
     },
 
     scene: [
+        LoadingScene,
+        HomeScene,
+        ShoppingListScene,
+        MagicalTreeScene,
+        FishingScene
+    ]
 
-    BootScene,
-
-    HomeScene,
-
-    ShoppingListScene,
-
-    MagicalTreeScene,
-
-    FishingScene
-
-]
 };
 
 new Phaser.Game(config);
