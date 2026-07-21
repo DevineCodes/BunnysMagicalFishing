@@ -4,6 +4,8 @@ const GameData = {
 
     shoppingList: [],
 
+    collectedItems: [],
+
     score: 0,
 
     coins: 0,

@@ -152,35 +152,80 @@ catchRandomItem() {
 
     const item = Phaser.Utils.Array.GetRandom(ITEMS);
 
-    this.showCatchPopup(item);
+    const needed = GameData.shoppingList.some(
+
+        shoppingItem => shoppingItem.name === item.name
+
+    );
+
+    if (needed) {
+
+        const alreadyCollected = GameData.collectedItems.includes(item.name);
+
+        if (!alreadyCollected) {
+
+            GameData.collectedItems.push(item.name);
+            this.updateShoppingListUI();
+
+            this.showCatchPopup(
+                item,
+                true
+            );
+
+        }
+        else {
+
+            this.showCatchPopup(
+                item,
+                false,
+                "Already Collected!"
+            );
+
+        }
+
+    }
+    else {
+
+        this.showCatchPopup(
+            item,
+            false,
+            "Not On Today's List!"
+        );
+
+    }
 
 }
 
-showCatchPopup(item) {
+showCatchPopup(item, success, message = "") {
 
     const panel = this.add.rectangle(
         240,
         250,
-        320,
-        140,
+        340,
+        170,
         0xFFFFFF,
         0.95
     );
 
-    panel.setStrokeStyle(4, 0x8B6B3F);
+    panel.setStrokeStyle(
+        4,
+        success ? 0x4CAF50 : 0xD9534F
+    );
+
+    const title = success ? "Collected!" : message;
 
     const text = this.add.text(
 
         240,
-        250,
+        240,
 
-        `${item.emoji}\n${item.name}`,
+        `${title}\n\n${item.emoji} ${item.name}`,
 
         {
 
             fontFamily: "Arial",
 
-            fontSize: "30px",
+            fontSize: "28px",
 
             color: "#4A3A24",
 
@@ -196,7 +241,61 @@ showCatchPopup(item) {
 
         text.destroy();
 
+        this.checkWinCondition();
+
     });
+
+}
+checkWinCondition() {
+
+    if (
+
+        GameData.collectedItems.length ===
+        GameData.shoppingList.length
+
+    ) {
+
+        this.showWinMessage();
+
+    }
+
+}
+showWinMessage() {
+
+    const panel = this.add.rectangle(
+        240,
+        400,
+        360,
+        220,
+        0xFFF8CC,
+        0.98
+    );
+
+    panel.setStrokeStyle(
+        5,
+        0xFFD700
+    );
+
+    this.add.text(
+
+        240,
+        400,
+
+        "🎉\nShopping Complete!\n\nWell Done Luna!",
+
+        {
+
+            fontFamily: "Arial",
+
+            fontSize: "30px",
+
+            color: "#4A3A24",
+
+            align: "center"
+
+        }
+
+    ).setOrigin(0.5);
 
 }
 
@@ -375,29 +474,53 @@ showCatchPopup(item) {
             }
         ).setOrigin(0.5);
 
-        const items = GameData.shoppingList;
+        this.shoppingTexts = [];
 
-        let text = "";
+const items = GameData.shoppingList;
 
-        items.forEach(item => {
+items.forEach((item, index) => {
 
-            text += "• " + item.name + "\n";
+    const text = this.add.text(
 
-        });
+        120,
+        75 + index * 30,
 
-        this.add.text(
-            150,
-            75,
-            text,
-            {
-                fontFamily: "Arial",
-                fontSize: "20px",
-                color: "#333333",
-                lineSpacing: 8
-            }
-        );
+        `${item.emoji} ${item.name}`,
+
+        {
+            fontFamily: "Arial",
+            fontSize: "20px",
+            color: "#333333"
+        }
+
+    );
+
+    this.shoppingTexts.push(text);
+
+});
 
     }
+
+    updateShoppingListUI() {
+
+    GameData.shoppingList.forEach((item, index) => {
+
+        const collected =
+            GameData.collectedItems.includes(item.name);
+
+        if (collected) {
+
+            this.shoppingTexts[index].setText(
+                `✅ ${item.emoji} ${item.name}`
+            );
+
+            this.shoppingTexts[index].setColor("#3A9D23");
+
+        }
+
+    });
+
+}
 
     createFishingLine() {
 
