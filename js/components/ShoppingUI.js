@@ -145,47 +145,68 @@ export default class ShoppingUI {
 
     }
 
-    showWinPopup() {
+    sshowWinPopup() {
 
-        const panel = this.scene.add.rectangle(
+    const panel = this.scene.add.rectangle(
 
-            240,
-            400,
+        240,
+        400,
 
-            360,
-            220,
+        360,
+        220,
 
-            0xFFF8CC,
-            0.98
+        0xFFF8CC,
+        0.98
 
+    );
+
+    panel.setStrokeStyle(
+        5,
+        0xFFD700
+    );
+
+    this.scene.add.text(
+
+        240,
+        400,
+
+        "🎉\nShopping Complete!\n\nWell Done Luna!",
+
+        {
+
+            fontFamily: "Arial",
+
+            fontSize: "30px",
+
+            color: "#4A3A24",
+
+            align: "center"
+
+        }
+
+    ).setOrigin(0.5);
+
+    // Wait before moving to the Cloud Market
+
+    this.scene.time.delayedCall(2200, () => {
+
+        this.scene.cameras.main.fadeOut(
+            500,
+            255,
+            255,
+            255
         );
 
-        panel.setStrokeStyle(
-            5,
-            0xFFD700
-        );
+        this.scene.time.delayedCall(500, () => {
 
-        this.scene.add.text(
+            this.scene.scene.start(
+                "CloudMarketScene"
+            );
 
-            240,
-            400,
+        });
 
-            "🎉\nShopping Complete!\n\nWell Done Luna!",
+    });
 
-            {
-
-                fontFamily: "Arial",
-
-                fontSize: "30px",
-
-                color: "#4A3A24",
-
-                align: "center"
-
-            }
-
-        ).setOrigin(0.5);
-
-    }
+}
 
 }

@@ -6,8 +6,6 @@ const GameData = {
 
     collectedItems: [],
 
-    score: 0,
-
     coins: 0,
 
     lives: 3,

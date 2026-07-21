@@ -87,6 +87,26 @@ export default class LoadingScene extends Phaser.Scene {
             "images/ui/play_button.png"
         );
 
+        this.load.image(
+            "cloudMarketBackground",
+            "images/backgrounds/cloud_market_background.png"
+        );
+
+        this.load.image(
+            "cloudStall",
+            "images/market/cloud_stall.png"
+        );
+
+        this.load.image(
+            "marketCounter",
+            "images/market/market_counter.png"
+        );
+
+        this.load.image(
+            "coin",
+            "images/ui/coin.png"
+        );
+
     }
 
     create() {
