@@ -8,9 +8,9 @@ export default class FishingManager {
 
     createFishingLine() {
 
-        this.scene.lineGraphics = this.scene.add.graphics();
+    return this.scene.add.graphics();
 
-    }
+}
 
     createHook() {
 

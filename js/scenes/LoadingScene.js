@@ -111,6 +111,7 @@ export default class LoadingScene extends Phaser.Scene {
 
     create() {
 
+        //this.scene.start("HomeScene");
         this.scene.start("HomeScene");
 
     }

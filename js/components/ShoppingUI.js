@@ -145,65 +145,69 @@ export default class ShoppingUI {
 
     }
 
-    sshowWinPopup() {
+    showWinPopup(callback = null) {
 
     const panel = this.scene.add.rectangle(
-
         240,
         400,
-
         360,
         220,
-
         0xFFF8CC,
         0.98
-
     );
 
-    panel.setStrokeStyle(
-        5,
-        0xFFD700
-    );
+    panel.setStrokeStyle(5, 0xFFD700);
 
-    this.scene.add.text(
+    const text = this.scene.add.text(
 
         240,
-        400,
+        370,
 
         "🎉\nShopping Complete!\n\nWell Done Luna!",
 
         {
-
             fontFamily: "Arial",
-
             fontSize: "30px",
-
             color: "#4A3A24",
-
             align: "center"
-
         }
 
     ).setOrigin(0.5);
 
-    // Wait before moving to the Cloud Market
+    const button = this.scene.add.rectangle(
+        240,
+        490,
+        180,
+        55,
+        0x7ED957
+    );
 
-    this.scene.time.delayedCall(2200, () => {
+    button.setStrokeStyle(3, 0x4A7A2A);
 
-        this.scene.cameras.main.fadeOut(
-            500,
-            255,
-            255,
-            255
-        );
+    const buttonText = this.scene.add.text(
+        240,
+        490,
+        "Continue",
+        {
+            fontFamily: "Arial",
+            fontSize: "24px",
+            color: "#ffffff",
+            fontStyle: "bold"
+        }
+    ).setOrigin(0.5);
 
-        this.scene.time.delayedCall(500, () => {
+    button.setInteractive({ useHandCursor: true });
 
-            this.scene.scene.start(
-                "CloudMarketScene"
-            );
+    button.on("pointerdown", () => {
 
-        });
+        panel.destroy();
+        text.destroy();
+        button.destroy();
+        buttonText.destroy();
+
+        if (callback) {
+            callback();
+        }
 
     });
 

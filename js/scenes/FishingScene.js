@@ -36,14 +36,13 @@ const bunny = new Bunny(
 
 this.bunny = bunny.create();
 
-const rod = new FishingRod(
+this.rod = new FishingRod(
     this,
     this.boatContainer
-);
+).create();
 
-this.rod = rod.create();
-
-        this.fishingManager.createFishingLine();
+        this.lineGraphics =
+    this.fishingManager.createFishingLine();
         const bobber = new Bobber(this);
 
 this.bobber = bobber;
@@ -122,11 +121,10 @@ reelIn() {
     // Stop bobber floating animation
     this.tweens.killTweensOf(this.hook);
 
-    // Stop every animation on the bobber
-this.tweens.killTweensOf(this.hook);
+    const tip = this.rod.getTipPosition();
 
-    const startX = this.boatContainer.x + 82;
-    const startY = this.boatContainer.y - 82;
+const startX = tip.x;
+const startY = tip.y;
 
     this.tweens.add({
 
@@ -269,18 +267,26 @@ this.tweens.killTweensOf(this.hook);
 }
     checkWinCondition() {
 
-        if (
+    if (
+        GameData.collectedItems.length ===
+        GameData.shoppingList.length
+    ) {
 
-            GameData.collectedItems.length ===
-            GameData.shoppingList.length
+        this.shoppingUI.showWinPopup(() => {
 
-        ) {
+            this.cameras.main.fadeOut(400, 0, 0, 0);
 
-            this.shoppingUI.showWinPopup();
+            this.time.delayedCall(400, () => {
 
-        }
+                this.scene.start("CloudMarketScene");
+
+            });
+
+        });
 
     }
+
+}
 
     castFishingLine(targetX, targetY) {
         if (this.isFishing) {
@@ -293,8 +299,10 @@ this.tweens.killTweensOf(this.hook);
 
         this.lineGraphics.clear();
 
-        const startX = this.boatContainer.x + 82;
-        const startY = this.boatContainer.y - 82;
+        const tip = this.rod.getTipPosition();
+
+const startX = tip.x;
+const startY = tip.y;
 
         this.hook.setPosition(startX, startY);
         this.hook.setVisible(true);

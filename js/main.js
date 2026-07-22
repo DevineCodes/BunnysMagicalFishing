@@ -7,6 +7,8 @@ import MagicalTreeScene from "./scenes/MagicalTreeScene.js";
 import FishingScene from "./scenes/FishingScene.js";
 import CloudMarketScene from "./scenes/CloudMarketScene.js";
 import SellingScene from "./scenes/SellingScene.js";
+import DecorationShopScene from "./scenes/DecorationShopScene.js";
+import HomeDecorationScene from "./scenes/HomeDecorationScene.js";
 
 const config = {
 
@@ -25,21 +27,15 @@ const config = {
     },
 
     scene: [
-
     LoadingScene,
-
     HomeScene,
-
     ShoppingListScene,
-
     MagicalTreeScene,
-
     FishingScene,
-
     CloudMarketScene,
-
-    SellingScene
-
+    SellingScene,
+    DecorationShopScene,
+    HomeDecorationScene
 ]
 
 };

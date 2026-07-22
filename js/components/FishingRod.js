@@ -9,21 +9,29 @@ export default class FishingRod {
 
     create() {
 
-        const rod = this.scene.add.image(
+        this.rod = this.scene.add.image(
             95,
             -18,
             "fishingRod"
         );
 
-        rod.setScale(0.16);
+        this.rod.setScale(0.16);
 
-        rod.setAngle(40);
+        this.rod.setAngle(40);
 
-        this.boatContainer.add(rod);
+        this.boatContainer.add(this.rod);
+
+        // Position of the rod tip relative to the boat
+        this.rodTip = {
+
+            x: 108,
+            y: -62
+
+        };
 
         this.scene.tweens.add({
 
-            targets: rod,
+            targets: this.rod,
 
             angle: 32,
 
@@ -37,7 +45,19 @@ export default class FishingRod {
 
         });
 
-        return rod;
+        return this;
+
+    }
+
+    getTipPosition() {
+
+        return {
+
+            x: this.boatContainer.x + this.rodTip.x,
+
+            y: this.boatContainer.y + this.rodTip.y
+
+        };
 
     }
 

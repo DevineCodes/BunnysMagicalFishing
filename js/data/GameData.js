@@ -1,5 +1,8 @@
 const GameData = {
 
+    // First launch: Bunny is outside
+    bunnyAtHome: false,
+
     level: 1,
 
     shoppingList: [],
@@ -7,6 +10,8 @@ const GameData = {
     collectedItems: [],
 
     coins: 0,
+
+    ownedDecorations: [],
 
     lives: 3,
 

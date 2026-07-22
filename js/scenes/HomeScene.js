@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import GameData from "../data/GameData.js";
 
 export default class HomeScene extends Phaser.Scene {
 
@@ -7,8 +8,9 @@ export default class HomeScene extends Phaser.Scene {
     }
 
     create() {
+
         // Fade in
-this.cameras.main.fadeIn(400, 0, 0, 0);
+        this.cameras.main.fadeIn(400, 0, 0, 0);
 
         // Background
         this.add.image(
@@ -41,30 +43,36 @@ this.cameras.main.fadeIn(400, 0, 0, 0);
             }
         ).setOrigin(0.5);
 
-        // Bunny
-        this.bunny = this.add.image(
-            240,
-            620,
-            "bunny"
+        // Show bunny only if she is outside
+        if (!GameData.bunnyAtHome) {
+
+            this.bunny = this.add.image(
+                240,
+                620,
+                "bunny"
+            );
+
+            this.bunny.setScale(0.28);
+
+            this.tweens.add({
+                targets: this.bunny,
+                y: this.bunny.y - 6,
+                duration: 1200,
+                yoyo: true,
+                repeat: -1,
+                ease: "Sine.easeInOut"
+            });
+
+        }
+
+        // PLAY BUTTON
+
+        const buttonImage = this.add.image(
+            0,
+            0,
+            "playButton"
         );
 
-        this.bunny.setScale(0.28);
-
-        // Bunny Idle Animation
-        this.tweens.add({
-            targets: this.bunny,
-            y: this.bunny.y - 6,
-            duration: 1200,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut"
-        });
-
-        // -----------------------------
-        // PLAY BUTTON
-        // -----------------------------
-
-        const buttonImage = this.add.image(0, 0, "playButton");
         buttonImage.setScale(0.45);
 
         const buttonText = this.add.text(
@@ -99,7 +107,8 @@ this.cameras.main.fadeIn(400, 0, 0, 0);
             useHandCursor: true
         });
 
-        // Hover Animation
+        // Hover
+
         this.playButton.on("pointerover", () => {
 
             this.tweens.add({
@@ -111,7 +120,6 @@ this.cameras.main.fadeIn(400, 0, 0, 0);
 
         });
 
-        // Hover Out
         this.playButton.on("pointerout", () => {
 
             this.tweens.add({
@@ -123,30 +131,49 @@ this.cameras.main.fadeIn(400, 0, 0, 0);
 
         });
 
-        // Click Animation
+        // Click
+
         this.playButton.on("pointerdown", () => {
 
-    this.tweens.add({
-        targets: this.playButton,
-        scaleX: 0.95,
-        scaleY: 0.95,
-        duration: 80,
-        yoyo: true,
-        ease: "Quad.easeOut",
-        onComplete: () => {
+            // Bunny is leaving home
+            GameData.bunnyAtHome = false;
 
-    this.cameras.main.fadeOut(400, 0, 0, 0);
+            this.tweens.add({
 
-    this.time.delayedCall(400, () => {
+                targets: this.playButton,
 
-        this.scene.start("ShoppingListScene");
+                scaleX: 0.95,
 
-    });
+                scaleY: 0.95,
 
-}
-    });
+                duration: 80,
 
-});
+                yoyo: true,
+
+                ease: "Quad.easeOut",
+
+                onComplete: () => {
+
+                    this.cameras.main.fadeOut(
+                        400,
+                        0,
+                        0,
+                        0
+                    );
+
+                    this.time.delayedCall(400, () => {
+
+                        this.scene.start(
+                            "ShoppingListScene"
+                        );
+
+                    });
+
+                }
+
+            });
+
+        });
 
     }
 

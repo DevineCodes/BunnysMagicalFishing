@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import GameData from "../data/GameData.js";
+import ITEMS from "../data/items.js";
 
 export default class SellingScene extends Phaser.Scene {
 
@@ -10,6 +11,8 @@ export default class SellingScene extends Phaser.Scene {
     create() {
 
         this.cameras.main.fadeIn(500, 255, 255, 255);
+        this.currentItem = 0;
+this.totalCoinsEarned = 0;
 
         this.createBackground();
 
@@ -30,6 +33,7 @@ export default class SellingScene extends Phaser.Scene {
         });
 
     }
+    
 
     createBackground() {
 
@@ -116,11 +120,9 @@ export default class SellingScene extends Phaser.Scene {
         this.coinIcon.setScale(0.16);
 
         this.coinText = this.add.text(
-
-            410,
-            95,
-
-            "0",
+    410,
+    95,
+    GameData.coins.toString(),
 
             {
 
@@ -140,8 +142,171 @@ export default class SellingScene extends Phaser.Scene {
 
     startSelling() {
 
-        console.log(GameData.collectedItems);
+    this.sellNextItem();
+
+}
+sellNextItem() {
+
+    if (this.currentItem >= GameData.shoppingList.length) {
+
+        this.finishSelling();
+        return;
 
     }
+
+    const item = GameData.shoppingList[this.currentItem];
+
+    this.itemSprite = this.add.text(
+
+        240,
+        180,
+
+        item.emoji,
+
+        {
+            fontSize: "70px"
+        }
+
+    ).setOrigin(0.5);
+
+    this.tweens.add({
+
+        targets: this.itemSprite,
+
+        y: 430,
+
+        duration: 700,
+
+        ease: "Bounce.easeOut",
+
+        onComplete: () => {
+
+            this.sellCurrentItem(item);
+
+        }
+
+    });
+
+}
+sellCurrentItem(item) {
+
+    const value = this.add.text(
+
+        240,
+        390,
+
+        `+${item.value}`,
+
+        {
+
+            fontFamily: "Arial",
+            fontSize: "34px",
+            fontStyle: "bold",
+            color: "#FFD700"
+
+        }
+
+    ).setOrigin(0.5);
+
+    GameData.coins += item.value;
+
+    this.totalCoinsEarned += item.value;
+
+    this.tweens.add({
+
+        targets: value,
+
+        y: 330,
+
+        alpha: 0,
+
+        duration: 900,
+
+        onComplete: () => {
+
+            value.destroy();
+            this.itemSprite.destroy();
+
+            this.coinText.setText(GameData.coins);
+
+            this.currentItem++;
+
+            this.sellNextItem();
+
+        }
+
+    });
+
+}
+
+finishSelling() {
+
+    this.add.text(
+
+        240,
+        600,
+
+        `Today's Earnings\n💰 ${this.totalCoinsEarned} Coins`,
+
+        {
+
+            fontFamily: "Arial",
+            fontSize: "32px",
+            color: "#4A3A24",
+            align: "center",
+            fontStyle: "bold"
+
+        }
+
+    ).setOrigin(0.5);
+
+    const button = this.add.rectangle(
+
+        240,
+        710,
+
+        220,
+        70,
+
+        0x7ED957
+
+    );
+
+    button.setStrokeStyle(4, 0x4A7A2A);
+
+    const text = this.add.text(
+
+        240,
+        710,
+
+        "Continue",
+
+        {
+
+            fontFamily: "Arial",
+            fontSize: "28px",
+            color: "#FFFFFF",
+            fontStyle: "bold"
+
+        }
+
+    ).setOrigin(0.5);
+
+    button.setInteractive({ useHandCursor: true });
+
+    button.on("pointerdown", () => {
+
+        this.cameras.main.fadeOut(400);
+
+this.time.delayedCall(400, () => {
+
+    this.scene.start("DecorationShopScene");
+
+});
+
+    });
+
+}
+
 
 }
